@@ -43,7 +43,7 @@ setup_admin(app)
 app.register_blueprint(api, url_prefix='/api')
 
 #JWT Key 
-app.config['JWT_SECRET_KEY'] = '$An$Jo$Mo$Ma$'
+app.config['JWT_SECRET_KEY'] = '$Su$Ma$dre$'
 #JSON Web Token Management
 jwt = JWTManager(app)
 
