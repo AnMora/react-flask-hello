@@ -2,6 +2,7 @@
 This module takes care of starting the API Server, Loading the DB and Adding the endpoints
 """
 import os
+from flask_mail import Mail, Message
 from flask import Flask, request, jsonify, url_for, send_from_directory, flash,json
 from flask_migrate import Migrate
 from flask_swagger import swagger
@@ -13,7 +14,7 @@ from api.admin import setup_admin
 # from flask_jwt_simple import JWTManager, jwt_required, create_jwt, get_jwt_identity
 from flask_jwt_extended import JWTManager, create_access_token, jwt_required, get_jwt_identity
 from datetime import datetime
-from flask_mail import Mail, Message
+
 
 #from models import Person
 
@@ -48,29 +49,31 @@ jwt = JWTManager(app)
 
 #Flask-mail
 app.config.update(
-    DEBUG=True,
-    #EMAIL SETTINGS
-    MAIL_SERVER='smtp.gmail.com',
-    MAIL_PORT=465,
-    MAIL_USE_SSL=True,
-    MAIL_USERNAME = 'a1groupcr@gmail.com',
-    MAIL_PASSWORD = '$$2021$$a1group$$'
-)
+	DEBUG=True,
+	#EMAIL SETTINGS
+	MAIL_SERVER='smtp.gmail.com',
+	MAIL_PORT=465,
+	MAIL_USE_SSL=True,
+	MAIL_USERNAME = 'sumadremalparido@gmail.com',
+	MAIL_PASSWORD = 'sumadremalparido'
+	)
 mail = Mail(app)
 
-@app.route('/reset', methods=['POST'])
-def test_request():
+
+ @app.route('/reset', methods=['POST'])
+ def test_request():
     # json_obj = {"name": "johnDoe"}
     recipient = "littlenoobhtb@gmail.com"
     try:
         msg = Message("Hello",
-                sender="a1groupcr@gmail.com",
-                recipients=[recipient])
-        msg.body = "Welcome to blah blah blah"
+                   sender="a1groupcr@gmail.com",
+                   recipients=[recipient])
+        msg.body = "Welcome to blah blah blah"        
         mail.send(msg)
-        return "Mail Sent"
+        return "Mail Sent"    
     except Exception as e:
         return (str(e))
+
 
 # Handle/serialize errors like a JSON object
 @app.errorhandler(APIException)
@@ -121,7 +124,7 @@ def add_user():
             user = User(first_name= req["first_name"], last_name= req["last_name"], email= req["email"], password= req["password"], birthday= req["birthday"])
             db.session.add(user)
             db.session.commit()
-            return "El usuario ha sido agregado exitosamente"
+            return jsonify({"status":"success","msg":"Succesfully registered"}), 200
                     
                     #### DEL USER####
 @app.route('/user/<int:user_id>', methods=['DELETE'])
@@ -144,16 +147,7 @@ def update_user(user_id):
 #endregion USER
 
 #region Favorite
-#region add GET FAVORITE
-            ###GET ALL FAVORITES###
-# @app.route('/favorite', methods=['GET'])
-# @jwt_required
-# def get_favorites():
-    
-#     fav = Favorite.query.all()
-#     payload = list(map(lambda f: f.serialize(), fav))
-#     return jsonify(payload), 200
-    #endregion END GET FAVORITE   
+  
             ###ADD FAVORITE###
 @app.route('/favorite', methods=['POST', 'GET'])
 @jwt_required()
@@ -173,12 +167,7 @@ def add_favorite():
             raise APIException("Cocktail ID must be typed ", status_code=400)
         if 'cocktail_name' not in req:
             raise APIException("Cocktail name must be typed", status_code=400)
-        # if 'cocktail_img' not in req:
-        #     raise APIException("Cocktail image must be typed", status_code=400)
-        # fav = Favorite(cocktail_id=req["cocktail_id"],cocktail_name= req["cocktail_name"], cocktail_img= req["cocktail_img"], user_id= req["user_id"])
-        #fav = Favorite(cocktail_id=req["cocktail_id"], cocktail_name= req["cocktail_name"], user_id= req["user_id"])
-        #if 'cocktail_img' not in req:
-            #raise APIException("Cocktail image must be typed", status_code=400)
+        
         fav = Favorite(cocktail_id=req["cocktail_id"],cocktail_name= req["cocktail_name"], user_id=user.id)
         db.session.add(fav)
         db.session.commit()
@@ -194,8 +183,10 @@ def add_favorite():
         myfavs = list(map(lambda f: f.serialize(), favs))
         return  jsonify(myfavs), 200
     return "Error, invalid method", 404
+
         ###DELETE FAVORITE BY ID###
 @app.route('/favorite/<int:fav_id>', methods=['DELETE'])
+@jwt_required()
 def delete_fav_by_id(fav_id):
     fav = Favorite.query.filter_by(id=fav_id).first_or_404()
     print(fav)
@@ -207,6 +198,18 @@ def delete_fav_by_id(fav_id):
         return jsonify(fav.serialize()), 200 #indicates that the server has successfully fulfilled the request and that there is no content to send in the response payload body
 
 #endregion Favorite
+<<<<<<< HEAD
+@api.route('/user/updatepass/<int:id>', methods=['PUT'])
+def pass_update(id):
+    payload =  request.get_json()
+    pass = payload.get("password")
+    user = User.query.get(id)
+    if user ==  None:
+        return jsonify({"status": "failed", "msg":"User not found"}), 404
+    db.session.add(user)
+    db.session.commit()
+    return jsonify("status": "failed", "msg": "Password has been changed successfully"), 200
+=======
 
 ##################UPDATE_PASS##########################
 # @api.route('/user/updatepass/<int:id>', methods=['PUT'])
@@ -220,6 +223,7 @@ def delete_fav_by_id(fav_id):
 #         db.session.commit()
 #     return jsonify("status": "failed", "msg": "Password has been changed successfully"), 200
 
+>>>>>>> 304e2d9aeacb6b647b69203ac772fa128e109c05
 #region LOGIN
 @app.route('/login', methods=['POST'])
 def user_login():
@@ -248,8 +252,12 @@ def user_login():
     print(myToken)
     return jsonify(myToken), 200 
 
-
 #endregion LOGIN
+
+
+
+
+
 # this only runs if `$ python src/main.py` is executed
 if __name__ == '__main__':
     PORT = int(os.environ.get('PORT', 3001))

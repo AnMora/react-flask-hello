@@ -20,8 +20,6 @@ const getState = ({ getStore, getActions, setStore }) => {
 			non_alcoholic: []
 		},
 		actions: {
-			////////////////////BEGIN TESTING PURPOSES @JVM && @ANMORA//////////////////////
-			//f(x) built for testing reg form(experimental by now)
 			signup: async (first_name, last_name, email, password, birthday) => {
 				const res = await fetch("https://3001-orange-felidae-s1amg4i5.ws-us03.gitpod.io/user", {
 					method: "POST",
@@ -259,7 +257,7 @@ const getState = ({ getStore, getActions, setStore }) => {
 				const existingFav = delFav.filter(i => i.id !== fav_id);
 				setStore({ favorites: [...existingFav] });
 			}
-			/////////////////////END TESTING PURPOSES @JVM && @ANMORA///////////////////////
+
 			// Use getActions to call a function within a fuction
 		}
 	};

@@ -18,6 +18,7 @@ export const Login = () => {
 	const [redirect, setRedirect] = useState(false);
 
 	const [recover, setRecover] = useState("");
+	const [input, setInput] = useState("");
 
 	return (
 		<>
@@ -43,6 +44,7 @@ export const Login = () => {
 								} else {
 									await actions.login(email, password);
 								}
+								//e.target.reset();
 							}}>
 							<h4 className="display-5">Log In</h4>
 							<hr className="my-1" />
@@ -52,10 +54,14 @@ export const Login = () => {
 										<label className="inlineFormInput">Email</label>
 										<input
 											type="text"
+											value={input}
 											className="form-control mb-2 text-center"
 											id="User"
 											placeholder="tomate.lo@gmail.com"
-											onChange={e => setEmail(e.target.value)}
+											onChange={e => {
+												setEmail(e.target.value);
+												setInput(e.target.value);
+											}}
 										/>
 									</div>
 									<div className="col-auto">
@@ -73,7 +79,14 @@ export const Login = () => {
 									<small id="emailHelp" className="form-text text-little">
 										Por favor revisa bien tus datos cuando termines.
 									</small>
-									<Button type="submit" variant="outline-info">
+									<Button
+										type="submit"
+										onChange={e => setInput(e.target.value)}
+										value={input}
+										onClick={e => {
+											setInput("");
+										}}
+										variant="outline-info">
 										Log In
 									</Button>
 								</div>
@@ -129,6 +142,7 @@ export const Login = () => {
 								} else {
 									alert("Fallo al registrar, porfavor intentalo de nuevo!");
 								}
+								//e.target.reset();
 							}}>
 							<div data-aos="flip-left" data-aos-easing="ease-out-cubic" data-aos-duration="2000">
 								<h4 className="display-5">Registro</h4>
